@@ -1,0 +1,7 @@
+.Rproj.user/*
+*.csv
+*.png
+*.txt
+*.tex
+*.zip
+.RData

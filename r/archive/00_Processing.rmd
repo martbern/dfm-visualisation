@@ -1,0 +1,88 @@
+```{r}
+library(pacman)
+p_load(tidyverse, ggplot2, here, gghalves)
+```
+
+```{r}
+data <- read_csv(here("data", "output_100.csv"))
+```
+
+```{r}
+datasource_information <- tribble(
+  ~source, ~domain,
+  "retsinformationdk", "Legal",
+  "skat", "Legal",
+  "retspraksis", "Legal",
+  "hest", "Social Media",
+  # "adl", ?
+  "botxt", "Other",
+  "cc", "Web",
+  "danavis", "News",
+  # "dannet",
+  # "depbank", 
+  "ep", "Conversation",
+  "ft", "Conversation",
+  "gutenberg", "Wiki & Books",
+  "jvj", "Wiki & Books",
+  "naat", "Conversation",
+  "opensub", "Conversation",
+  "relig", "Wiki & Books",
+  "spont", "Conversation",
+  # "synne", ?
+  "tv2r", "News",
+  "wiki", "Wiki & Books",
+  "wikibooks", "Wiki & Books",
+  "wikisource", "Wiki & Books"
+)
+
+exclude_sources <- c("adl", "synne", "danavis", "depbank", "botxt")
+
+data_labeled <- data %>% 
+  filter(!(source %in% exclude_sources)) %>% 
+  right_join(datasource_information) %>% 
+  filter(source != "depbank") %>% 
+  filter(source != "botxt") %>% 
+  mutate(tokens = as.numeric(tokens)) %>% 
+  filter(tokens != 0)
+```
+
+```{r}
+examine_data <- data_labeled %>% 
+  filter(domain == "Wiki & Books")
+```
+
+
+```{r fig.height=4, fig.width=7}
+sources <- c("cc", "tv2r", "spontsynne", "wiki", "ft")
+
+data_labeled %>% 
+  # filter(source %in% sources) %>% 
+  ggplot(
+    aes(x=domain, 
+        y=tokens,
+        fill = domain)
+  ) + 
+  #scale_y_log10() + 
+  ggdist::stat_halfeye(
+    adjust = .5, 
+    width = .6, 
+    .width = 0, 
+    justification = -.2, 
+    point_colour = NA
+  ) + 
+  geom_boxplot(
+    width = .15, 
+    outlier.shape = NA
+  ) +
+  gghalves::geom_half_point(
+    side = "l", 
+    range_scale = .3, 
+    alpha = .1,
+    size = 0.5,
+  ) +
+  coord_flip() + 
+  theme(legend.position="none") +
+  facet_wrap(~domain,
+             scales = "free")
+```
+

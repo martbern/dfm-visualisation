@@ -1,0 +1,29 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+# Religions
+```{r}
+plot_religions <- data_labeled %>%
+  pivot_longer(cols=c("atheist", "buddhist", "christian", "hindu", "muslim", "jew"), names_to="religion") %>% 
+  mutate(value = value + 0.00001)
+
+basic_rain(data = plot_religions,
+           x = religion,
+           y = value,
+           fill = religion)
+```
+
+# Muslim names
+```{r fig.height=4.5, fig.width=5}
+
+plot_muslim_names <- data_labeled %>% 
+  mutate(total_names = female_names + male_names) %>% 
+  mutate(muslim_names_prop = (muslim_names)/(male_names+female_names))
+
+basic_rain(data = plot_muslim_names,
+           x = domain,
+           y = muslim_names_prop,
+           fill = muslim_names)
+```

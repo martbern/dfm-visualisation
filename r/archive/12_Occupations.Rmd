@@ -1,0 +1,30 @@
+```{r}
+occu_df <- data_labeled %>% 
+  select(starts_with("occu")) %>% 
+  sum_every_n_rows(4)
+```
+
+```{r}
+occu_df_inspect <- data_labeled %>% 
+  filter(doc_id == "retsinformationdk_174476") %>% 
+  arrange(desc(occu_vagt)) %>% 
+  select(c(starts_with("occu_vag"), doc_id))
+```
+
+```{r}
+combined <- occu_df %>% 
+  bind_cols(select(data_labeled, tokens)) %>% 
+  select(-1)
+
+occupation_counts <- combined %>% 
+  drop_na() %>% 
+  summarise(across(1:ncol(combined), sum)) %>% 
+  mutate(across(starts_with("occu"), ~ .x / tokens * 100)) %>% 
+  select(-tokens)
+
+occupation_counts_pivoted <- pivot_longer(occupation_counts, cols = everything(), names_to = "occupation") %>% 
+  arrange(desc(value))
+```
+
+# TODO:
+# Generate a table with occupations grouped by source. Do the same for the 

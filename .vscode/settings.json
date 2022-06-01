@@ -1,0 +1,10 @@
+{
+    "python.formatting.provider": "black",
+    "macros": {  // Note: this requires macros extension by publisher:"geddski" 
+        "pythonExecSelectionAndCursorDown": [
+            "python.execSelectionInTerminal", 
+            "cursorDown" 
+        ]
+    }
+}
+
